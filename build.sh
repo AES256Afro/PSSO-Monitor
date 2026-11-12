@@ -30,5 +30,11 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
 </plist>
 EOF
 
-codesign --force --sign - "$APP"
+# Ad-hoc by default. For distribution: SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" ./build.sh
+SIGN_IDENTITY="${SIGN_IDENTITY:--}"
+if [ "$SIGN_IDENTITY" = "-" ]; then
+    codesign --force --sign - "$APP"
+else
+    codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
+fi
 echo "Built $APP"

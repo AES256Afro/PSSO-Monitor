@@ -24,8 +24,14 @@ silicon and Intel):
 ./package-dmg.sh
 ```
 
-The app is ad-hoc signed and not notarized. On another Mac, the first launch needs right-click ›
-Open, or System Settings › Privacy & Security › Open Anyway.
+By default the build is ad-hoc signed, which other Macs will block on first launch. For a
+release that opens without warnings, sign with a Developer ID and notarize:
+
+```bash
+SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" NOTARY_PROFILE=<profile> ./package-dmg.sh
+```
+
+Create the notarization profile once with `xcrun notarytool store-credentials <profile>`.
 
 ## What it does
 

@@ -14,4 +14,15 @@ cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
 rm -f "$DMG"
 hdiutil create -volname "PSSO Monitor $VERSION" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null
+
+# Optional: sign with a Developer ID and notarize.
+#   SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" NOTARY_PROFILE=<profile> ./package-dmg.sh
+# Create the profile once with: xcrun notarytool store-credentials <profile>
+if [ "${SIGN_IDENTITY:--}" != "-" ]; then
+    codesign --force --timestamp --sign "$SIGN_IDENTITY" "$DMG"
+    if [ -n "${NOTARY_PROFILE:-}" ]; then
+        xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait
+        xcrun stapler staple "$DMG"
+    fi
+fi
 echo "Built $DMG"
