@@ -3,11 +3,13 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-swift build -c release
+# Universal (Apple silicon + Intel) so the release runs on any Mac.
+ARCHS=(--arch arm64 --arch x86_64)
+swift build -c release "${ARCHS[@]}"
 APP="build/PSSO Monitor.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
-cp "$(swift build -c release --show-bin-path)/PSSOMonitor" "$APP/Contents/MacOS/PSSOMonitor"
+cp "$(swift build -c release "${ARCHS[@]}" --show-bin-path)/PSSOMonitor" "$APP/Contents/MacOS/PSSOMonitor"
 
 cat > "$APP/Contents/Info.plist" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -19,7 +21,7 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
     <key>CFBundleIdentifier</key><string>com.aes256afro.psso-monitor</string>
     <key>CFBundleExecutable</key><string>PSSOMonitor</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>1.0</string>
+    <key>CFBundleShortVersionString</key><string>1.0.0</string>
     <key>CFBundleVersion</key><string>1</string>
     <key>LSMinimumSystemVersion</key><string>13.0</string>
     <key>NSHighResolutionCapable</key><true/>

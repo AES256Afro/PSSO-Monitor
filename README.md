@@ -17,6 +17,16 @@ open "build/PSSO Monitor.app"
 
 Reading the unified log requires an administrator account.
 
+To build a distributable disk image (`build/PSSO-Monitor-<version>.dmg`, universal for Apple
+silicon and Intel):
+
+```bash
+./package-dmg.sh
+```
+
+The app is ad-hoc signed and not notarized. On another Mac, the first launch needs right-click ›
+Open, or System Settings › Privacy & Security › Open Anyway.
+
 ## What it does
 
 - **Start Live** streams Platform SSO log entries as they happen (`log stream`).
