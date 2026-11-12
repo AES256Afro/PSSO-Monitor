@@ -10,8 +10,22 @@ struct ContentView: View {
     }()
 
     var body: some View {
-        let rows = store.filtered
         VStack(spacing: 0) {
+            Picker("", selection: $store.tab) {
+                ForEach(AppTab.allCases) { Text($0.rawValue).tag($0) }
+            }
+            .pickerStyle(.segmented).labelsHidden().fixedSize()
+            .padding(.vertical, 8)
+            Divider()
+            if store.tab == .logs { logs } else { CaptureView() }
+        }
+        .toolbar { toolbar(store.filtered) }
+        .sheet(isPresented: $store.showState) { stateSheet }
+    }
+
+    private var logs: some View {
+        let rows = store.filtered
+        return VStack(spacing: 0) {
             summaryBar
             Divider()
             filterBar
@@ -33,8 +47,6 @@ struct ContentView: View {
             .font(.caption).foregroundStyle(.secondary)
             .padding(.horizontal, 12).padding(.vertical, 5)
         }
-        .toolbar { toolbar(rows) }
-        .sheet(isPresented: $store.showState) { stateSheet }
     }
 
     // MARK: Pieces
@@ -130,6 +142,7 @@ struct ContentView: View {
     @ToolbarContentBuilder
     private func toolbar(_ rows: [LogEvent]) -> some ToolbarContent {
         ToolbarItemGroup {
+          if store.tab == .logs {
             Button { store.toggleLive() } label: {
                 Label(store.isLive ? "Stop" : "Start Live", systemImage: store.isLive ? "stop.fill" : "play.fill")
             }
@@ -148,9 +161,12 @@ struct ContentView: View {
                 }
             } label: { Label("Export", systemImage: "square.and.arrow.up") }
             .disabled(rows.isEmpty)
+          }
             Button { store.refreshState(); store.showState = true } label: { Label("SSO State", systemImage: "person.badge.key") }
                 .help("Show Platform SSO registration state")
-            Button { store.clear() } label: { Label("Clear", systemImage: "trash") }
+            if store.tab == .logs {
+                Button { store.clear() } label: { Label("Clear", systemImage: "trash") }
+            }
         }
     }
 

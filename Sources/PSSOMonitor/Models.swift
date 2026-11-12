@@ -37,7 +37,7 @@ enum Browsers {
     /// (display name, needles matched case-insensitively against process path and message)
     static let known: [(name: String, needles: [String])] = [
         ("Safari", ["com.apple.safari", "/safari.app/", "com.apple.webkit.networking", "safariviewservice"]),
-        ("Chrome", ["com.google.chrome", "/google chrome"]),
+        ("Chrome", ["com.google.chrome", "/google chrome", "/chromium.app/"]),
         ("Edge", ["com.microsoft.edgemac", "/microsoft edge"]),
         ("Firefox", ["org.mozilla.firefox", "/firefox.app/"]),
         ("Arc", ["company.thebrowser.browser", "/arc.app/"]),
@@ -65,7 +65,7 @@ enum Classifier {
 
     /// Phrases that contain "error"/"fail" words but mean nothing went wrong.
     private static let benign = rx(#"error\s*[:=]?\s*(\(null\)|nil|none|0\b)|no errors?\b|without errors?\b|error\s*handler|didFail\w*:\]\s+on"#)
-    private static let failure = rx(#"\b(fail(ed|ure|ures|s|ing)?|errors?|denied|invalid|unable to|could not|couldn't|cannot|can't|time[d]? ?out|expired|not registered|unauthori[sz]ed|rejected|mismatch|cancel+ed|not found|no (valid )?(token|credential|sso token|device configuration|user configuration)s?|Error Domain=)\b"#)
+    private static let failure = rx(#"\b(fail(ed|ure|ures|s|ing)?|errors?|denied|invalid|unable to|could not|couldn't|cannot|can't|time[d]? ?out|expired|not registered|unauthori[sz]ed|rejected|mismatch|cancel+ed|not found|incorrect|wrong|blocked|locked out|no (valid )?(token|credential|sso token|device configuration|user configuration)s?|Error Domain=)\b"#)
     private static let success = rx(#"\b(success(ful|fully)?|succeeded|authenticated|login complete[d]?|tokens? (received|refreshed|saved|updated)|registration complete[d]?)\b"#)
 
     static func outcome(level: String, message: String) -> Outcome {

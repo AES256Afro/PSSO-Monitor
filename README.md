@@ -31,6 +31,37 @@ Reading the unified log requires an administrator account.
   include a summary, failures by browser, and the `app-sso platform -s` registration state.
 - **SSO State** shows the device's Platform SSO registration.
 
+## Sign-in Capture
+
+The **Sign-in Capture** tab records one test run from Start to Stop and labels it for you.
+
+1. Press **Start Capture**. The app records the conditions: PIV / smart card inserted, Cisco
+   Secure Client (AnyConnect) VPN state, any other VPN, the network's DNS domains, and Platform
+   SSO registration. These become the scenario label, e.g. `PIV inserted · Office network` or
+   `No PIV · Remote on Cisco VPN`.
+2. Reproduce the sign-ins in any browser. The app records which browsers were opened or switched
+   to, and listens to Platform SSO, smart card / PIV, Authentication Services and local
+   authentication logs.
+3. Press **Stop Capture**. The app re-checks the conditions, reads the pages each browser
+   visited during the capture from its history, and groups the log activity into sign-in
+   attempts marked Pass, Fail or No result, each with a plain-language reason (Wrong PIN,
+   Certificate error, Credential rejected, Timed out, …) and the site it happened on.
+4. **Export Capture** as an Excel workbook or a visual HTML report.
+
+The Excel workbook has six sheets: Summary (scenario and conditions at start and stop),
+Attempts, Sites, Timeline, Common responses (every distinct pass/fail message with a count, for
+refining the reason rules in `Attempts.swift`), and Events.
+
+Things to know:
+
+- "Office" means the network's DNS domain ends with one of the **Office domains** (default
+  `nasa.gov`, editable on the tab) while the Cisco VPN is not connected.
+- Sites come from browser history: Chrome, Edge, Brave, Arc, Vivaldi and Firefox work as is;
+  Safari needs Full Disk Access for PSSO Monitor; private windows are never included. Query
+  strings are stripped from URLs.
+- Attempts are matched to sites by browser and timing, so treat the pairing as a strong hint,
+  not proof.
+
 ## Log sources
 
 Subsystems `com.apple.AppSSO` and `com.apple.PlatformSSO`, `AppSSODaemon`, and IdP SSO

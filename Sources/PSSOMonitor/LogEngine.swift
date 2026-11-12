@@ -11,6 +11,19 @@ final class LogEngine {
     OR subsystem BEGINSWITH "com.okta.mobile" OR subsystem BEGINSWITH "com.jamf.connect"
     """
 
+    /// Sign-in capture: Platform SSO plus smart card / PIV, Authentication Services (passkeys, web
+    /// sign-in sheets) and local authentication. Local authentication is very chatty, so only its
+    /// PSSO, browser and error entries are taken.
+    static let capturePredicate = "(" + predicate + ") "
+        + #"OR subsystem CONTAINS[c] "CryptoTokenKit" OR subsystem CONTAINS[c] "smartcard" "#
+        + #"OR process IN {"pivtoken", "ctkahp", "sc_auth", "com.apple.ifdreader"} "#
+        + #"OR subsystem BEGINSWITH "com.apple.AuthenticationServices" "#
+        + #"OR (subsystem == "com.apple.LocalAuthentication" AND (category == "PSSO" "#
+        + #"OR messageType == error OR messageType == fault "#
+        + #"OR process CONTAINS[c] "Safari" OR process CONTAINS[c] "Chrome" OR process CONTAINS[c] "Edge" "#
+        + #"OR process CONTAINS[c] "firefox" OR process == "Arc" OR process CONTAINS[c] "Brave" "#
+        + #"OR process CONTAINS[c] "Opera" OR process CONTAINS[c] "Vivaldi"))"#
+
     private var process: Process?
     private var buffer = Data()
     private let queue = DispatchQueue(label: "psso.log.reader")
